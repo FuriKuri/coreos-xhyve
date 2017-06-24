@@ -16,8 +16,9 @@ done
 
 XHYVE=${XHYVE:-xhyve}
 CHANNEL=${CHANNEL:-alpha}
+IMGSDIR=${IMGSDIR:-imgs}
 
-LATEST=$(ls -r imgs/${CHANNEL}.*.vmlinuz | head -n 1 | sed -e "s,.*${CHANNEL}.,," -e "s,.coreos_.*,,")
+LATEST=$(ls -r ${IMGSDIR}/${CHANNEL}.*.vmlinuz | head -n 1 | sed -e "s,.*${CHANNEL}.,," -e "s,.coreos_.*,,")
 if [[ -z ${LATEST} ]]; then
     echo "Error: couldn't find anything to load locally (${CHANNEL} channel)."
     echo "       please run 'coreos-xhyve-fetch' first."
@@ -54,4 +55,4 @@ if [ -n "$ROOT_HDD" ]; then
 fi
 EXTRA_ARGS=${EXTRA_ARGS}
 
-${XHYVE} $MEM $SMP $PCI_DEV $LPC_DEV $NET $ROOT $UUID $EXTRA_ARGS -f kexec,imgs/$VMLINUZ,imgs/$INITRD,"$CMDLINE"
+${XHYVE} $MEM $SMP $PCI_DEV $LPC_DEV $NET $ROOT $UUID $EXTRA_ARGS -f kexec,${IMGSDIR}/$VMLINUZ,${IMGSDIR}/$INITRD,"$CMDLINE"

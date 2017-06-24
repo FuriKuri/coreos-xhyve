@@ -10,6 +10,8 @@ getVersionID () {
 
 CHANNEL=${CHANNEL:-alpha}
 VERSION=${VERSION:-$(getVersionID ${CHANNEL})}
+IMGSDIR=${IMGSDIR:-imgs}
+
 # Ensure that required executables exist before proceeding
 which curl >/dev/null || (echo "CURL is required." && exit 1)
 
@@ -37,7 +39,7 @@ type gpg 2>&1 > /dev/null && gpg --batch --quiet --import < $WORKDIR/$GPG_KEY_FI
 
 function get {
 	FILE=$1
-	if [ -f imgs/${CHANNEL}.${VERSION}.${FILE} ]; then
+	if [ -f ${IMGSDIR}/${CHANNEL}.${VERSION}.${FILE} ]; then
 		echo "found cached $FILE (${CHANNEL}/${VERSION})"
 		return
 	fi
@@ -49,11 +51,11 @@ function get {
 
 	type gpg 2>&1 > /dev/null && gpg --batch --trusted-key "${GPG_LONG_ID}" \
 		--verify "${WORKDIR}/${FILE}.sig" "${WORKDIR}/${FILE}"
-	mv ${WORKDIR}/${FILE} imgs/${CHANNEL}.${VERSION}.${FILE}
-	mv ${WORKDIR}/${FILE}.sig imgs/${CHANNEL}.${VERSION}.${FILE}.sig
+	mv ${WORKDIR}/${FILE} ${IMGSDIR}/${CHANNEL}.${VERSION}.${FILE}
+	mv ${WORKDIR}/${FILE}.sig ${IMGSDIR}/${CHANNEL}.${VERSION}.${FILE}.sig
 }
 
-mkdir -p imgs
+mkdir -p ${IMGSDIR}
 ROOT=http://${CHANNEL}.release.core-os.net/amd64-usr/${VERSION}/
 VMLINUZ=coreos_production_pxe.vmlinuz
 INITRD=coreos_production_pxe_image.cpio.gz
